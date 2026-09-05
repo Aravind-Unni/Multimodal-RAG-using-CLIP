@@ -159,16 +159,3 @@ uv run streamlit run app.py
 
 Serves extracted images directly (used by the frontend to render retrieved charts).
 
-## Known limitations
-
-- **Page numbers on text chunks require chunking directly from the PDF**, not the markdown export — markdown has no positional metadata (`prov`), so page numbers will show as `None` if chunking is run against `output.md`.
-- **Only 3-image-scale collections have been tested** with the "separate text/image retrieval" approach; at larger scale, image retrieval quality and count (`IMAGE_CANDIDATES`) may need tuning.
-- **Sparse (BM25) search is currently only used at storage time**, not in the manual `retrieve_multimodal` retrieval path — dense CLIP similarity is used for both text and image branches at query time.
-- **Reranking cannot score images** with the current LangChain `NVIDIARerank` wrapper (it only forwards `page_content`), so images bypass reranking entirely and are always included alongside reranked text.
-
-## Possible next steps
-
-- Route sparse (BM25) search back into the text branch of retrieval, fused via RRF with dense CLIP scores.
-- Use NVIDIA's raw REST API (bypassing the LangChain wrapper) to enable genuine vision-aware reranking of image candidates.
-- Chunk directly from the source PDF to restore accurate page-number metadata.
-- Add multi-document support (currently scoped to a single `doc_id` per run).
